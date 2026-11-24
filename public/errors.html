@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Error log · Journal import for QuickBooks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="brand"><a href="/">Journal import <span>for QuickBooks Online</span></a></div>
+  </header>
+
+  <main>
+    <div class="review-head">
+      <div>
+        <h1 class="log-title">Error log</h1>
+        <p id="log-summary" class="review-summary">Loading…</p>
+      </div>
+      <div class="review-actions">
+        <a class="link-button" href="/">Back to the app</a>
+        <a class="link-button primary-link" id="download" href="/api/errors/download" hidden>Download log</a>
+      </div>
+    </div>
+    <p class="log-help">Errors from QuickBooks, connecting, sign-in and the app itself are kept here for troubleshooting. When contacting Intuit support, download the log and include the <strong>intuit_tid</strong> of the failed request.</p>
+    <div id="log"></div>
+  </main>
+
+  <footer class="site-foot">
+    <a href="/terms.html">Licence agreement</a>
+    <a href="/privacy.html">Privacy policy</a>
+    <a href="mailto:it@blackoak-re.com?subject=Journal%20import%20support">Contact support: it@blackoak-re.com</a>
+  </footer>
+
+  <script type="module">
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const when = (iso) => new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const SOURCES = {
+      'quickbooks-api': 'QuickBooks API',
+      'quickbooks-oauth': 'QuickBooks sign-in',
+      'quickbooks-connect': 'Connecting QuickBooks',
+      'sign-in': 'App sign-in',
+      upload: 'Upload',
+      server: 'App',
+    };
+
+    const res = await fetch('/api/errors');
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      document.querySelector('#log-summary').innerHTML = res.status === 401
+        ? 'Sign in to see the error log. <a href="/">Open the app</a> and sign in, then come back.'
+        : esc(data.error || `The log couldn't be loaded (${res.status}).`);
+    } else {
+      const entries = data.entries || [];
+      document.querySelector('#download').hidden = entries.length === 0;
+      document.querySelector('#log-summary').textContent = entries.length
+        ? `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}, newest first. Entries are kept for ${data.retentionDays} days (at most ${data.maxEntries.toLocaleString()}).`
+        : `No errors in the last ${data.retentionDays} days.`;
+      document.querySelector('#log').innerHTML = entries.length ? `
+        <div class="ledger-wrap"><table class="ledger log-table">
+          <thead><tr><th>Time</th><th>Where</th><th>What happened</th><th>Status</th><th>intuit_tid</th></tr></thead>
+          <tbody>${entries.map((e) => {
+            const ctx = e.context ? Object.entries(e.context).filter(([, v]) => v != null && v !== '').map(([k, v]) => `${esc(k)}: ${esc(v)}`).join(', ') : '';
+            const detail = [
+              e.operation && `<div><span class="sub">Request</span> ${esc(e.operation)}</div>`,
+              ctx && `<div><span class="sub">Context</span> ${ctx}</div>`,
+              e.faults?.length && `<div><span class="sub">QuickBooks details</span> ${e.faults.map((f) => esc(`${[f.message, f.detail].filter(Boolean).join(': ')}${f.code ? ` (code ${f.code})` : ''}${f.element ? `, field ${f.element}` : ''}`)).join('<br>')}</div>`,
+              e.stack && `<pre>${esc(e.stack)}</pre>`,
+            ].filter(Boolean).join('');
+            return `<tr class="${e.level === 'warning' ? 'warn-row' : ''}">
+              <td class="nowrap">${esc(when(e.at))}</td>
+              <td class="nowrap">${esc(SOURCES[e.source] || e.source)}${e.level === 'warning' ? '<span class="sub">warning</span>' : ''}</td>
+              <td>${esc(e.message)}${detail ? `<details><summary>Details</summary>${detail}</details>` : ''}</td>
+              <td>${esc(e.status ?? '')}</td>
+              <td class="tid">${esc(e.intuitTid || '')}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table></div>` : '';
+    }
+  </script>
+</body>
+</html>

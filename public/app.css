@@ -240,3 +240,17 @@ select { font: inherit; color: var(--ink); padding: 6px 8px; border: 1px solid v
 .site-foot a { color: var(--ink-soft); text-underline-offset: 3px; }
 .site-foot a:hover { color: var(--ink); }
 @media (max-width: 820px) { .site-foot { padding: 0 16px 32px; } }
+
+/* ---------- error log ---------- */
+.log-title { font-size: 30px; letter-spacing: -0.01em; }
+.log-help { max-width: 72ch; color: var(--ink-soft); margin: 16px 0 24px; }
+.log-table { background: var(--sheet); border: 1px solid var(--rule); }
+.log-table td.nowrap { white-space: nowrap; }
+.log-table td.tid { font-size: 12.5px; word-break: break-all; color: var(--ink-soft); width: 180px; }
+.log-table tr.warn-row td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
+.log-table tr:not(.warn-row) td:first-child { box-shadow: inset 3px 0 0 var(--red); }
+.log-table details { margin-top: 6px; font-size: 13px; }
+.log-table summary { cursor: pointer; color: var(--green); }
+.log-table details > div { margin-top: 4px; }
+.log-table details .sub { display: inline; margin-right: 6px; }
+.log-table pre { white-space: pre-wrap; font-size: 12px; background: var(--paper); padding: 8px; border-radius: 4px; }

@@ -141,7 +141,7 @@ async function uploadFile(file) {
     const data = await res.json();
     if (res.status === 401) {
       await loadStatus();
-      showNotice(esc(data.error || 'The QuickBooks connection ended. Connect again.'));
+      showNotice(esc(data.error || 'The QuickBooks connection ended. Click "Connect to QuickBooks" to connect again.'));
       return;
     }
     if (!res.ok && !data.fileErrors) throw new Error(data.error || `Upload failed (${res.status}).`);

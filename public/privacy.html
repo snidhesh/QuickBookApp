@@ -27,6 +27,7 @@
       <li><strong>Posting results.</strong> For each entry posted: the QuickBooks transaction ID, or the error message QuickBooks returned.</li>
       <li><strong>QuickBooks lists.</strong> To check a file, the app reads the company’s accounts, customers, vendors, employees, classes, locations, currency settings, and existing journal entries for the dates in the file. These are used during the check and are not stored.</li>
       <li><strong>Sign-in.</strong> A cookie that keeps you signed in for 7 days, and a short-lived cookie (10 minutes) that protects the QuickBooks connection step. After a wrong password, the app counts failed attempts from your IP address for 15 minutes to block guessing.</li>
+      <li><strong>Error log.</strong> When something fails, the app records what happened so problems can be traced: the time, which step failed, the error message (including QuickBooks’ own error details and its request ID, <em>intuit_tid</em>), and the journal number or file involved. A wrong password is recorded with the IP address it came from. Passwords, tokens and keys are never recorded. Signed-in users can view and download the log, for example to share with Intuit support.</li>
     </ul>
     <p>The app doesn’t use analytics, advertising or tracking cookies, and it doesn’t collect data for any purpose other than posting journal entries.</p>
 
@@ -35,14 +36,15 @@
       <li>Checked entries and posting results are deleted automatically one hour after upload.</li>
       <li>The QuickBooks connection is kept until someone disconnects it, from the app or from QuickBooks. Intuit also ends it after about 100 days without use.</li>
       <li>Failed sign-in counts are deleted after 15 minutes.</li>
+      <li>Error log entries are deleted after 90 days, and only the latest 2,000 are kept.</li>
       <li>Entries posted to QuickBooks stay in QuickBooks, under the company’s own QuickBooks settings and Intuit’s policies.</li>
     </ul>
 
     <h2>Who else processes the data</h2>
     <ul>
       <li><strong>Intuit (QuickBooks Online)</strong> receives the entries you post and provides the lists the app checks against.</li>
-      <li><strong>Vercel</strong> hosts the app. Its servers may be outside the UAE, including in the United States, and it may keep standard request logs for a limited time.</li>
-      <li><strong>Upstash</strong> stores the QuickBooks connection and the checked entries for up to one hour, as described above.</li>
+      <li><strong>Vercel</strong> hosts the app. Its servers may be outside the UAE, including in the United States. It keeps standard request logs and a copy of each error log entry for a limited time.</li>
+      <li><strong>Upstash</strong> stores the QuickBooks connection, the checked entries for up to one hour, and the error log, as described above.</li>
       <li><strong>Google Fonts</strong> supplies the typeface, so your browser requests font files from Google.</li>
     </ul>
     <p>Data is not sold or shared with anyone else. All traffic to and from the app uses HTTPS.</p>

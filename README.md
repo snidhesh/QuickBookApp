@@ -107,6 +107,18 @@ the app to start from a working example.
 - `src/qbo.js`: OAuth 2.0 (connect, refresh, revoke) and API calls, with retry on rate limits.
 - `public/`: the web page.
 
+## Error log
+
+Every error is recorded with what failed, when, and the context (journal number, date, file):
+QuickBooks API errors with Intuit's full fault details and `intuit_tid`, connection and token
+errors, unexpected server errors, and failed sign-ins (as warnings, with the IP address).
+Passwords, tokens and keys are never recorded.
+
+- Each entry goes to the hosting logs (Vercel runtime logs) and to storage (Upstash, or
+  `data/store.json` locally). Storage keeps the latest 2,000 entries for up to 90 days.
+- Signed-in users can open **Error log** (`/errors.html`, linked in the footer) and click
+  **Download log** for a JSON file to send to Intuit support.
+
 ## Notes
 
 - One QuickBooks company is connected at a time, and everyone using this app posts to it.

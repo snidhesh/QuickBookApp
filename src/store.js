@@ -54,6 +54,17 @@ const redisStore = {
     if (n === 1 && ttlSeconds) await redis('EXPIRE', key, ttlSeconds);
     return n;
   },
+  // Newest-first list, capped at `max` items.
+  async lpushCapped(key, value, max) {
+    await redis('LPUSH', key, JSON.stringify(value));
+    await redis('LTRIM', key, 0, max - 1);
+  },
+  async lrange(key, start, stop) {
+    return ((await redis('LRANGE', key, start, stop)) || []).map((v) => JSON.parse(v));
+  },
+  async ltrim(key, start, stop) {
+    await redis('LTRIM', key, start, stop);
+  },
 };
 
 // ---------- Local file (development) ----------
@@ -118,6 +129,25 @@ const fileStore = {
     data[key] = item;
     save();
     return item.value;
+  },
+  async lpushCapped(key, value, max) {
+    const data = load();
+    const list = [value, ...(data[key]?.value || [])].slice(0, max);
+    data[key] = { value: list, expiresAt: null };
+    save();
+  },
+  async lrange(key, start, stop) {
+    const list = load()[key]?.value || [];
+    // Same index rules as Redis LRANGE: negative indexes count from the end, stop is inclusive.
+    const from = start < 0 ? Math.max(list.length + start, 0) : start;
+    const to = stop < 0 ? list.length + stop : stop;
+    return list.slice(from, to + 1);
+  },
+  async ltrim(key, start, stop) {
+    const data = load();
+    if (!data[key]) return;
+    data[key].value = await this.lrange(key, start, stop);
+    save();
   },
 };
 
