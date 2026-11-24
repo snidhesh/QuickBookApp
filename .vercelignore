@@ -1,0 +1,10 @@
+# Never upload secrets, saved QuickBooks tokens, or company files to Vercel
+.env
+.env.*
+!.env.example
+data/
+File.xls
+*.xls
+!samples/*.xls
+node_modules/
+.DS_Store
