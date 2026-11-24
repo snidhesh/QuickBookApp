@@ -65,6 +65,17 @@ One-time setup:
 
 ### Going live (production)
 
+Intuit's production settings ask for these addresses (replace the domain if yours differs):
+
+| Intuit field | Address |
+| --- | --- |
+| Host domain | `quickbooks-journal-import.vercel.app` |
+| Launch URL | `https://quickbooks-journal-import.vercel.app/` |
+| Disconnect URL | `https://quickbooks-journal-import.vercel.app/disconnected.html` |
+| End-user licence agreement | `https://quickbooks-journal-import.vercel.app/terms.html` |
+| Privacy policy | `https://quickbooks-journal-import.vercel.app/privacy.html` |
+| Redirect URI | `https://quickbooks-journal-import.vercel.app/callback` |
+
 Set `QBO_ENVIRONMENT=production` and use the app's **Production** keys. Intuit only issues
 these after the app's production questionnaire is complete, and production redirect URIs must
 be HTTPS, so the app has to run behind an HTTPS address, with `QBO_REDIRECT_URI` set to match.
