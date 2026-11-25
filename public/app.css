@@ -16,6 +16,8 @@
 }
 
 * { box-sizing: border-box; }
+/* The hidden attribute must win over component display rules such as .link-button and .check. */
+[hidden] { display: none !important; }
 
 html { background: var(--paper); color: var(--ink); }
 body {
